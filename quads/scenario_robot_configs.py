@@ -68,7 +68,7 @@ def create_and_populate_robot_config(robot_name, robot_root_usdpath="/world/robo
             model = "NoModel"
             desc = "Gripper testing proxy robot"
 
-        case "ur3e":
+        case "ur3e" | "spot" | "a1":
             robot_prim_path = "/ur3e"
             artpath = robot_prim_path
             robot_usd_file_path = assets_root_dir + "/Isaac/Robots/UniversalRobots/ur3e/ur3e.usd"

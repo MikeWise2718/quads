@@ -2,45 +2,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "quads",
-      "type": "python",
-      "request": "launch",
-      "cwd": "${workspaceRoot}",
-      "program": "quads.py",
-      "python": "c:/Users/mwise/AppData/Local/ov/pkg/isaac-sim-4.1.0/python.bat",
-      "console": "integratedTerminal",
-      "args": [
-          "--robot", "ur5e.yml",
-      ],
-    },
-    {
-      "name": "mgr (ur5e)",
-      "type": "python",
-      "request": "launch",
-      "cwd": "${workspaceRoot}",
-      "program": "examples/isaac_sim/mgr.py",
-      "python": "c:/Users/mwise/AppData/Local/ov/pkg/isaac-sim-4.0.0/python.bat",
-      "console": "integratedTerminal",
-      "args": [
-          "--robot", "ur5e.yml",
-      ],
-    },
-    {
-      "name": "mgr (jrl)",
-      "type": "python",
-      "request": "launch",
-      "cwd": "${workspaceRoot}",
-      "program": "examples/isaac_sim/mgr.py",
-      "python": "c:/Users/mwise/AppData/Local/ov/pkg/isaac-sim-4.0.0/python.bat",
-      "console": "integratedTerminal",
-      "args": [
-          "--robot", "../../../../../robot/minicobo/minicobo_1a.yml",
-          "--jakas", "RL",
-          "--add_trays",
-          "-mmd", "inv"
-      ],
-    },
-    {
       "name": "Python: Attach to ... something",
       "type": "python",
       "request": "attach",
@@ -53,6 +14,13 @@
         "-preserve-symlinks",
         "-preserve-symlinks-main",
       ]
+    },
+    {
+      "name": "Python: Attach to windows",
+      "type": "python",
+      "request": "attach",
+      "port": 3000,
+      "host": "127.0.0.1",
     }
   ]
 }

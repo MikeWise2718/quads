@@ -116,9 +116,9 @@ class ScenarioBase:
             case "quadruped":
                 rv = ["a1", "spot"]
             case "inverse-kinematics":
-                rv = ["ur5e","ur3e", "rs007n"]
+                rv = ["ur3e", "ur5e", "ur10e", "rs007n"]
             case _:
-                rv = ["a1", "spot", "ur3e", "ur5e", "rs007n"]
+                rv = ["a1", "spot", "ur3e", "ur5e", "ur10e", "rs007n"]
         return rv
 
     @staticmethod

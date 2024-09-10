@@ -819,25 +819,24 @@ class UIBuilder:
         # print("Done _on_init")
 
     def _setup_scene(self):
-        pass
         # print("ui_builder._setup_scene")
- #       self.pick_scenario(self._scenario_name)
+        self.pick_scenario(self._scenario_name)
 
- #       create_new_stage()
+        create_new_stage()
 
- #       self._cur_scenario.load_scenario(self._robot_name, self._ground_opt)
+        self._cur_scenario.load_scenario(self._robot_name, self._ground_opt)
 
- #       self._cur_scenario.realize_robot_skin(self._robskin_opt)
+        self._cur_scenario.realize_robot_skin(self._robskin_opt)
 
- #       self._scenario_action_list = self._cur_scenario.get_scenario_actions()
- #       if len(self._scenario_action_list) > 0:
- #           self._action = self._scenario_action_list[0]
- #       else:
- #           self._action = ""
- #       self._actionsel_btn.text = self._action
- #       self._last_created_robot_name = self._robot_name
- #       self.load_scenario_action_vstack()
- #       self.load_robot_action_vstack()
+        self._scenario_action_list = self._cur_scenario.get_scenario_actions()
+        if len(self._scenario_action_list) > 0:
+            self._action = self._scenario_action_list[0]
+        else:
+            self._action = ""
+        self._actionsel_btn.text = self._action
+        self._last_created_robot_name = self._robot_name
+        self.load_scenario_action_vstack()
+        self.load_robot_action_vstack()
 
     def get_next_val_safe(self, lst, val, inc=1):
         try:
