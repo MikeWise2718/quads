@@ -23,7 +23,9 @@ from omni.isaac.ui.ui_utils import get_style
 from omni.usd import StageEventType
 from .senut import set_stiffness_for_joints, set_damping_for_joints
 
-
+from .scenario_base import ScenarioBase
+from .invkin_scenario import InvkinScenario
+from .quadruped_scenario import QuadrupedScenario
 
 
 from .senut import get_setting, save_setting
@@ -44,8 +46,8 @@ class UIBuilder:
     dkyellow = uiclr("#404000")
     dkpurple = uiclr("#400040")
     dkcyan = uiclr("#004040")
-    _scenario_names = ['default']
-    _scenario_name = 'default'
+    _scenario_names = ScenarioBase.get_scenario_names()
+    _scenario_name = ScenarioBase.get_default_scenario()
     _robot_names = ["ur3e"]
     _robot_name = "ur3e"
     _ground_opts = ["none", "default", "groundplane", "groundplane-blue"]
@@ -81,8 +83,10 @@ class UIBuilder:
         # Get access to the timeline to control stop/pause/play programmatically
         self._timeline = omni.timeline.get_timeline_interface()
 
-        self._robot_names = ['spot','a1']
-        self._robot_name = 'spot'
+
+        self._robot_names =ScenarioBase.get_scenario_robots("all")
+        self._robot_name = self.find_valid_robot_name(self._scenario_name, self._robot_name, 1)
+        print("init robot name:", self._robot_name)
 
         self._cur_scenario = None
 
@@ -108,7 +112,7 @@ class UIBuilder:
 
     def LoadSettings(self):
         # print("LoadSettings")
-        self._robot_name = get_setting("p_robot_name", self._robot_name)
+        # self._robot_name = get_setting("p_robot_name", self._robot_name)
         self._ground_opt = get_setting("p_ground_opt", self._ground_opt)
         self._robskin_opt = get_setting("p_robskin_opt", self._robskin_opt)
         self._joint_alarms = get_setting("p_joint_alarms", self._joint_alarms)
@@ -794,25 +798,11 @@ class UIBuilder:
         self._cur_scenario.realize_joint_alarms_for_all()
 
     def pick_scenario(self, scenario_name):
-        pass
-#        if scenario_name == "sinusoid-joint":
-#            self._cur_scenario = SinusoidJointScenario(self)
-#        elif scenario_name == "pick-and-place":
-#            self._cur_scenario = PickAndPlaceScenario(self)
-#        elif scenario_name == "pick-and-place-new":
-#            self._cur_scenario = PickAndPlaceNewScenario(self)
-#        elif scenario_name == "franka-pick-and-place":
-#            self._cur_scenario = FrankaPickAndPlaceScenario(self)
-#        elif scenario_name == "rmpflow":
-#           self._cur_scenario = RMPflowScenario(self)
-#        elif scenario_name == "rmpflow-new":
-#            self._cur_scenario = RMPflowNewScenario(self)
-#        elif scenario_name == "object-inspection":
-#            self._cur_scenario = ObjectInspectionScenario()
-#        elif scenario_name == "cage-rmpflow":
-#            self._cur_scenario = CageRmpflowScenario(self)
-#        elif scenario_name == "inverse-kinematics":
-#            self._cur_scenario = InvkinScenario(self)
+        if scenario_name == "inverse-kinematics":
+            self._cur_scenario = InvkinScenario(self)
+        elif scenario_name == "quadruped":
+            self._cur_scenario = QuadrupedScenario(self)
+
 #        elif scenario_name == "gripper":
 #            self._cur_scenario = GripperScenario(self)
 #        else:
@@ -825,7 +815,7 @@ class UIBuilder:
         # self._articulation = None
         # self._cuboid = None
         self.LoadSettings()
-#        self.pick_scenario(self._scenario_name)
+        self.pick_scenario(self._scenario_name)
         # print("Done _on_init")
 
     def _setup_scene(self):
@@ -895,7 +885,6 @@ class UIBuilder:
         self._mode = self.get_next_val_safe(self._modes, self._mode)
         self._mode_btn.text = self._mode
 
-
     def find_valid_robot_name(self, scenario_name, robot_name, binc=1):
         cur_robot = robot_name
         iter = 0
@@ -903,12 +892,12 @@ class UIBuilder:
         # iterate until we find a robot that the current scenario can handle
         while True:
             robot_name = self.get_next_val_safe(self._robot_names, robot_name, binc)
-#            if ScenarioBase.can_handle_robot(scenario_name, robot_name):
+            if ScenarioBase.can_handle_robot(scenario_name, robot_name):
                 # print(f"Found valid robot name {robot_name} for scenario {scenario_name}")
                 # if ScenarioBase.can_handle_robot(scenario_name, self._last_created_robot_name):
                     # print(f"Overrode robot name {robot_name} with {self._last_created_robot_name}")
                 #     robot_name = self._last_created_robot_name
-#                break
+                break
             iter += 1
             if iter > maxiters:
                 return ""

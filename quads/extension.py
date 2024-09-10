@@ -23,7 +23,7 @@ from omni.usd import StageEventType
 
 
 # from .global_variables import EXTENSION_DESCRIPTION, EXTENSION_TITLE
-from .ui_builder_min import UIBuilder
+from .ui_builder_quad import UIBuilder
 
 
 # importing things first to avoid getting the wrong references
