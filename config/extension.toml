@@ -1,0 +1,30 @@
+[core]
+# reloadable = true
+# ensure it is loaded AFTER omni.asimov.* extensions
+order = 1
+
+[package]
+version = "1.0.0"
+category = "simulation"
+title = "Quads"
+description = ""
+authors = ["Mike Wise"]
+repository = "https://github.com/MikeWise2718/JakaControl"
+keywords = ["Microsoft", "Quads", "Spot"]
+changelog = "docs/CHANGELOG.md"
+readme = "docs/README.md"
+preview_image = "data/preview.png"
+icon = "data/icon.png"
+
+[dependencies]
+"omni.kit.uiapp" = {}
+"omni.isaac.ui" = {}
+"omni.isaac.core" = {}
+
+[[python.module]]
+name = "quads"
+
+[[test]]
+dependencies = [
+    "omni.kit.ui_test"
+]
