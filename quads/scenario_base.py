@@ -185,7 +185,15 @@ class ScenarioBase:
         world = World.instance()
 
         if self._ground_opt == "default":
-            self._ground=world.scene.add_default_ground_plane(z_position=-1.02)
+            # self._ground=world.scene.add_default_ground_plane(z_position=-1.02)
+            self._ground=world.scene.add_default_ground_plane(
+                            z_position=-1.02,
+                            name="default_ground_plane",
+                            prim_path="/World/defaultGroundPlane",
+                            static_friction=0.2,
+                            dynamic_friction=0.2,
+                            restitution=0.01,
+                        )
 
         elif self._ground_opt == "groundplane":
             self._ground = GroundPlane(prim_path="/World/groundPlane", size=10, color=np.array([0.5, 0.5, 0.5]))

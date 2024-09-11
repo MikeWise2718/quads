@@ -7,6 +7,7 @@ from pxr import UsdPhysics, Usd, UsdGeom, Gf
 from omni.isaac.core.utils.nucleus import get_assets_root_path
 from omni.isaac.core.utils.stage import add_reference_to_stage
 from omni.isaac.core.prims import XFormPrim
+from omni.isaac.core.world import World
 
 from omni.isaac.core.utils.numpy.rotations import euler_angles_to_quats, rot_matrices_to_quats
 
@@ -16,6 +17,7 @@ from .scenario_base import ScenarioBase
 from omni.isaac.motion_generation import ArticulationKinematicsSolver, LulaKinematicsSolver
 
 from omni.isaac.core.utils.stage import add_reference_to_stage,  get_current_stage
+from omni.isaac.quadruped.robots import Unitree
 
 
 # Copyright (c) 2022-2023, NVIDIA CORPORATION. All rights reserved.
@@ -46,6 +48,33 @@ class QuadrupedScenario(ScenarioBase):
     def load_scenario(self, robot_name, ground_opt):
         super().load_scenario(robot_name, ground_opt)
 
+        self._world_settings = {}
+        self._world_settings["stage_units_in_meters"] = 1.0
+        self._world_settings["physics_dt"] = 1.0 / 400.0
+        self._world_settings["rendering_dt"] = 5.0 / 400.0
+
+        world = World.instance()
+
+        self._base_command = [0.0, 0.0, 0.0, 0]
+        self._event_flag = False
+
+        # bindings for keyboard to command
+        self._command_mapping = {
+            # forward command
+            "Forward": [5, 0.0, 0.0],
+            # back command
+            "Back": [-5, 0.0, 0.0],
+            # left command
+            "Left": [0.0, -4.0, 0.0],
+            # right command
+            "Right": [0.0, 4.0, 0.0],
+            # yaw command (positive)
+            "Yaw-plus": [0.0, 0.0, 1.0],
+            # yaw command (negative)
+            "Yaw-neg": [0.0, 0.0, -1.0],
+        }
+
+
         # self._ro bcfg = self.create_robot_config(robot_name, ground_opt)
 
         self.add_light("sphere_light")
@@ -53,7 +82,29 @@ class QuadrupedScenario(ScenarioBase):
 
         self.create_robot_config(robot_name, "/World/roborg", ground_opt)
         # self._robcfg = self.get_robot_config()
-        self.load_robot_into_scene()
+        # self.load_robot_into_scene()
+
+        match robot_name:
+            case "a1":
+                self._a1 = world.scene.add(
+                    Unitree(
+                        prim_path="/World/A1",
+                        name="A1",
+                        model="A1",
+                        position=np.array([0, 0, -0.700]),
+                        physics_dt=self._world_settings["physics_dt"],
+                    )
+                )
+            case "spot":
+                self._a1 = world.scene.add(
+                    Unitree(
+                        prim_path="/World/Spot",
+                        name="Spot",
+                        model="Spot",
+                        position=np.array([0, 1, -0.400]),
+                        physics_dt=self._world_settings["physics_dt"],
+                    )
+                )
 
         self.phystep = 0
         self.ikerrs = 0
@@ -61,6 +112,7 @@ class QuadrupedScenario(ScenarioBase):
         self._robot_name = robot_name
         self._ground_opt = ground_opt
         self._stage = get_current_stage()
+        self._world = world
 
         self.add_light("sphere_light")
         self.add_ground(ground_opt)
@@ -70,7 +122,7 @@ class QuadrupedScenario(ScenarioBase):
         self._target = XFormPrim("/World/target", scale=[sz, sz, sz])
 
     def post_load_scenario(self):
-        print("InvKin post_load_scenario")
+        print("Quadruped post_load_scenario")
 
         # self.register_robot_articulations()
         # self.teleport_robots_to_zeropos()
@@ -91,8 +143,12 @@ class QuadrupedScenario(ScenarioBase):
 
         # print("Valid frame names at which to compute kinematics:", rcfg._kinematics_solver.get_all_frame_names())
 
-    def reset_scenario(self):
-        pass
+    async def reset_scenario(self):
+
+        await self._world.play_async()
+        self._a1.set_state(self._a1._default_a1_state)
+        self._a1.post_reset()
+        print("Quadruped reset_scenario done")
         # self.teleport_robots_to_zeropos()
 
         # rcfg = self.get_robot_config()
@@ -112,8 +168,13 @@ class QuadrupedScenario(ScenarioBase):
     def physics_step(self, step_size):
         # rcfg = self.get_robot_config()
 
-
         self.phystep += 1
+
+        if self._event_flag:
+            self._a1._qp_controller.switch_mode()
+            self._event_flag = False
+        print("physics step - step size:", step_size," base_command:", self._base_command)
+        self._a1.advance(step_size, self._base_command)
 
         # ee_position, ee_rot_mat = rcfg._articulation_kinematics_solver.compute_end_effector_pose()
         # self._ee_pos = ee_position
@@ -128,15 +189,17 @@ class QuadrupedScenario(ScenarioBase):
         self.physics_step(step)
 
     def scenario_action(self, actionname, mouse_button=0 ):
-        print("InvkinScenario action:", actionname, "   mouse_button:", mouse_button)
-        if actionname == "Toggle IkSolving":
-            self.ik_solving_active = not self.ik_solving_active
-        elif actionname == "Move Target to EE":
-            # self._target.set_world_pose(np.array([0.0,-0.006,0.7668]),euler_angles_to_quats([0,0,0]))
-            self._target.set_world_pose(self._ee_pos, rot_matrices_to_quats(self._ee_rot))
+        print("QuadrupedScenario action:", actionname, "   mouse_button:", mouse_button)
+        if actionname.startswith("Cmd:"):
+            _,key = actionname.split(":")
+            if key in self._command_mapping:
+                self._base_command[0:3] = self._command_mapping[key]
+                self._event_flag = True
+        elif actionname == "Nop":
+            pass
         else:
             print(f"Unknown actionname: {actionname}")
 
     def get_scenario_actions(self):
-        rv = ["Move Target to EE", "Toggle IkSolving"]
+        rv = ["Cmd:Forward", "Cmd:Back", "Cmd:Left", "Cmd:Right", "Cmd:Yaw-plus", "Cmd:Yaw-neg"]
         return rv
