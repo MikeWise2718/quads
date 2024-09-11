@@ -114,11 +114,11 @@ class ScenarioBase:
     def get_scenario_robots(scenario_name):
         match scenario_name:
             case "quadruped":
-                rv = ["a1", "spot"]
+                rv = ["a1", "go1", "spot"]
             case "inverse-kinematics":
                 rv = ["ur3e", "ur5e", "ur10e", "rs007n"]
             case _:
-                rv = ["a1", "spot", "ur3e", "ur5e", "ur10e", "rs007n"]
+                rv = ["a1", "go1", "spot", "ur3e", "ur5e", "ur10e", "rs007n"]
         return rv
 
     @staticmethod

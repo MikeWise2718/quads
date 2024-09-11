@@ -349,7 +349,7 @@ class UIBuilder:
                 self._load_btn = LoadButton(
                     "Load/Create Scene", "Create", setup_scene_fn=self._setup_scene, setup_post_load_fn=self._setup_post_load
                 )
-                self._load_btn.set_world_settings(physics_dt=1 / 60.0, rendering_dt=1 / 60.0)
+                self._load_btn.set_world_settings(physics_dt=1 / 400.0, rendering_dt=5 / 400.0)
                 self.wrapped_ui_elements.append(self._load_btn)
 
 

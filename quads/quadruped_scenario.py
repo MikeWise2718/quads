@@ -50,7 +50,9 @@ class QuadrupedScenario(ScenarioBase):
 
         self._world_settings = {}
         self._world_settings["stage_units_in_meters"] = 1.0
-        self._world_settings["physics_dt"] = 1.0 / 400.0
+        # self._world_settings["physics_dt"] = 1.0 / 400.0
+        # self._world_settings["rendering_dt"] = 5.0 / 400.0
+        self._world_settings["physics_dt"] = 1.0 / 60.0
         self._world_settings["rendering_dt"] = 5.0 / 400.0
 
         world = World.instance()
@@ -61,9 +63,9 @@ class QuadrupedScenario(ScenarioBase):
         # bindings for keyboard to command
         self._command_mapping = {
             # forward command
-            "Forward": [5, 0.0, 0.0],
+            "Forward": [15, 0.0, 0.0],
             # back command
-            "Back": [-5, 0.0, 0.0],
+            "Back": [-15, 0.0, 0.0],
             # left command
             "Left": [0.0, -4.0, 0.0],
             # right command
@@ -173,7 +175,12 @@ class QuadrupedScenario(ScenarioBase):
         if self._event_flag:
             self._a1._qp_controller.switch_mode()
             self._event_flag = False
-        print("physics step - step size:", step_size," base_command:", self._base_command)
+
+        now = time.time()
+        if now - self.last_msg_time > self.msggap:
+            # print("physics step - step size:", step_size," base_command:", self._base_command)
+            print(f"phystep:{self.phystep}  step_size: {step_size:.5f}  base_cmd: {self._base_command}")
+            self.last_msg_time = now
         self._a1.advance(step_size, self._base_command)
 
         # ee_position, ee_rot_mat = rcfg._articulation_kinematics_solver.compute_end_effector_pose()
