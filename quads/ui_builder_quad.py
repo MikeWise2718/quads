@@ -826,6 +826,8 @@ class UIBuilder:
 
         self._cur_scenario.load_scenario(self._robot_name, self._ground_opt)
 
+        print("realize robot skin")
+
         self._cur_scenario.realize_robot_skin(self._robskin_opt)
 
         self._scenario_action_list = self._cur_scenario.get_scenario_actions()
@@ -835,8 +837,11 @@ class UIBuilder:
             self._action = ""
         self._actionsel_btn.text = self._action
         self._last_created_robot_name = self._robot_name
-        self.load_scenario_action_vstack()
+        print("load_scenario_action_vstack")
         self.load_robot_action_vstack()
+        print("load_scenario_action_vstack")
+        self.load_robot_action_vstack()
+        print("Done _setup_scene")
 
     def get_next_val_safe(self, lst, val, inc=1):
         try:
@@ -947,7 +952,7 @@ class UIBuilder:
         self._cur_scenario.realize_rmptarg_vis(self._rmptarg_vis)
 
     def _change_robskin_opt(self, x, y, b, m):
-        print(f"_change_robskin_opt x:{x} y:{y} b:{b} m:{m}")
+        # print(f"_change_robskin_opt x:{x} y:{y} b:{b} m:{m}")
         if m==0:
             self._robskin_opt = self.get_next_val_safe(self._robskin_opts, self._robskin_opt, self.binc[b])
             self._robskin_opt_btn.text = self._robskin_opt
@@ -979,13 +984,14 @@ class UIBuilder:
         In this example, a scenario is initialized which will move each robot joint one at a time in a loop while moving the
         provided prim in a circle around the robot.
         """
-        # print("ui_builder._setup_post_load")
+        print("ui_builder._setup_post_load")
         # self._reset_scenario() # we can't reset before post_load .... not sure what the intent was
         self._colprims = None
 
-
         if self._cur_scenario is not None:
+            print("ui_builder._setup_post_load - setup_scenario")
             self._cur_scenario.setup_scenario()
+            print("ui_builder._setup_post_load - post_load_scenario")
             self._cur_scenario.post_load_scenario()
 
             self._cur_scenario.reset_scenario() # should always be able to do a reset after post_load
@@ -998,9 +1004,9 @@ class UIBuilder:
         self._scenario_state_btn.reset()
         self._scenario_state_btn.enabled = True
         self._reset_btn.enabled = True
-        # print("ui_builder._setup_post_load almost done")
+        print("ui_builder._setup_post_load almost done")
         self.build_ui_scenario_dependent()
-        # print("ui_builder._setup_post_load done")
+        print("ui_builder._setup_post_load done")
 
 
     def _reset_scenario(self):

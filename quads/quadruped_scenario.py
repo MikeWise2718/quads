@@ -72,35 +72,36 @@ class QuadrupedScenario(ScenarioBase):
     def post_load_scenario(self):
         print("InvKin post_load_scenario")
 
-        self.register_robot_articulations()
-        self.teleport_robots_to_zeropos()
+        # self.register_robot_articulations()
+        # self.teleport_robots_to_zeropos()
 
         # RMPflow config files for supported robots are stored in the motion_generation extension under "/motion_policy_configs"
 
-        rcfg = self.get_robot_config()
-        rcfg._kinematics_solver = LulaKinematicsSolver(
-            robot_description_path = rcfg.rdf_path,
-            urdf_path = rcfg.urdf_path
-        )
+        # rcfg = self.get_robot_config()
+        # rcfg._kinematics_solver = LulaKinematicsSolver(
+        #     robot_description_path = rcfg.rdf_path,
+        #     urdf_path = rcfg.urdf_path
+        # )
 
-        eename = rcfg.eeframe_name
-        rcfg._articulation_kinematics_solver = ArticulationKinematicsSolver(rcfg._articulation, rcfg._kinematics_solver, eename)
-        ee_position, ee_rot_mat = rcfg._articulation_kinematics_solver.compute_end_effector_pose()
-        self._ee_pos = ee_position
-        self._ee_rot = ee_rot_mat
+        # eename = rcfg.eeframe_name
+        # rcfg._articulation_kinematics_solver = ArticulationKinematicsSolver(rcfg._articulation, rcfg._kinematics_solver, eename)
+        # ee_position, ee_rot_mat = rcfg._articulation_kinematics_solver.compute_end_effector_pose()
+        # self._ee_pos = ee_position
+        # self._ee_rot = ee_rot_mat
 
-        print("Valid frame names at which to compute kinematics:", rcfg._kinematics_solver.get_all_frame_names())
+        # print("Valid frame names at which to compute kinematics:", rcfg._kinematics_solver.get_all_frame_names())
 
     def reset_scenario(self):
-        self.teleport_robots_to_zeropos()
+        pass
+        # self.teleport_robots_to_zeropos()
 
-        rcfg = self.get_robot_config()
+        # rcfg = self.get_robot_config()
 
-        ee_position, ee_rot_mat = rcfg._articulation_kinematics_solver.compute_end_effector_pose()
-        self._ee_pos = ee_position
-        self._ee_rot = ee_rot_mat
+        # ee_position, ee_rot_mat = rcfg._articulation_kinematics_solver.compute_end_effector_pose()
+        # self._ee_pos = ee_position
+        # self._ee_rot = ee_rot_mat
 
-        self._target.set_world_pose(self._ee_pos, rot_matrices_to_quats(self._ee_rot))
+        # self._target.set_world_pose(self._ee_pos, rot_matrices_to_quats(self._ee_rot))
 
     phystep = 0
     ikerrs = 0
@@ -109,39 +110,14 @@ class QuadrupedScenario(ScenarioBase):
     last_msg_time = 0
 
     def physics_step(self, step_size):
-        rcfg = self.get_robot_config()
+        # rcfg = self.get_robot_config()
 
-        if self.ik_solving_active:
-            target_position, target_orientation = self._target.get_world_pose()
 
-            # Track any movements of the robot base
-            robot_base_translation, robot_base_orientation = rcfg._articulation.get_world_pose()
-            rcfg._kinematics_solver.set_robot_base_pose(robot_base_translation, robot_base_orientation)
-
-            action, success = rcfg._articulation_kinematics_solver.compute_inverse_kinematics(target_position, target_orientation)
-
-            if success:
-                # print(f"step:{self.phystep}")
-                # print(f"action:{action}")
-                rcfg._articulation.apply_action(action)
-                pass
-            else:
-                msg =f"IK did not converge to a solution.  No action is being taken - phystep: {self.phystep} ikerrs: {self.ikerrs}"
-                if self.ikerrs == 0:
-                    action, success = rcfg._articulation_kinematics_solver.compute_inverse_kinematics(target_position, target_orientation)
-                    carb.log_info(msg)
-                self.ikerrs += 1
-                curtime = time.time()
-                elap = curtime - self.last_msg_time
-                if elap > self.msggap:
-                    self.last_msg_time = curtime
-                    carb.log_warn(msg)
-                    print(msg)
         self.phystep += 1
 
-        ee_position, ee_rot_mat = rcfg._articulation_kinematics_solver.compute_end_effector_pose()
-        self._ee_pos = ee_position
-        self._ee_rot = ee_rot_mat
+        # ee_position, ee_rot_mat = rcfg._articulation_kinematics_solver.compute_end_effector_pose()
+        # self._ee_pos = ee_position
+        # self._ee_rot = ee_rot_mat
 
     def teardown_scenario(self):
         pass

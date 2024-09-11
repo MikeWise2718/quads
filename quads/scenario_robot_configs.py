@@ -68,7 +68,49 @@ def create_and_populate_robot_config(robot_name, robot_root_usdpath="/world/robo
             model = "NoModel"
             desc = "Gripper testing proxy robot"
 
-        case "ur3e" | "spot" | "a1":
+        case "spot":
+            robot_prim_path = "/spot"
+            artpath = robot_prim_path
+            #  "http://omniverse-content-production.s3-us-west-2.amazonaws.com/assets_root_dir"
+
+
+            robot_usd_file_path = assets_root_dir + "/Isaac/Robots/BostonDynamics/spot/spot.usd"
+            mopo_robot_name = "spot"
+
+            rmp_param_dir = rmp_config_dir + "/universal_robots"
+            rdf_path = rmp_param_dir + "/ur3e/rmpflow/ur3e_robot_description.yaml"
+            urdf_path = rmp_param_dir + "/ur3e/ur3e.urdf"
+            rmp_config_path = rmp_param_dir + "/ur3e/rmpflow/ur3e_rmpflow_config.yaml"
+            eeframe_name = "tool0"
+            max_step_size = 0.00334
+
+            grippername = "none"
+
+            mfg = "Boston Dynamics"
+            model = "Spot"
+            desc = "Boston Dynamics Spot"
+
+        case "a1":
+            robot_prim_path = "/a1"
+            artpath = robot_prim_path
+
+            robot_usd_file_path = assets_root_dir + "/Isaac/Robots/Unitree/A1/a1.usd"
+            mopo_robot_name = "A1"
+
+            rmp_param_dir = rmp_config_dir + "/universal_robots"
+            rdf_path = rmp_param_dir + "/ur3e/rmpflow/ur3e_robot_description.yaml"
+            urdf_path = rmp_param_dir + "/ur3e/ur3e.urdf"
+            rmp_config_path = rmp_param_dir + "/ur3e/rmpflow/ur3e_rmpflow_config.yaml"
+            eeframe_name = "tool0"
+            max_step_size = 0.00334
+
+            grippername = "none"
+
+            mfg = "Unitree"
+            model = "A1"
+            desc = "Unitree A1"
+
+        case "ur3e":
             robot_prim_path = "/ur3e"
             artpath = robot_prim_path
             robot_usd_file_path = assets_root_dir + "/Isaac/Robots/UniversalRobots/ur3e/ur3e.usd"
@@ -125,6 +167,26 @@ def create_and_populate_robot_config(robot_name, robot_root_usdpath="/world/robo
             mfg = "Universal Robots"
             model = "UR10e"
             desc = "Universal Robots UR10e"
+
+        case "rs007n":
+            robot_prim_path = "/khi_rs007n"
+            artpath = robot_prim_path
+            # robot_usd_file_path = assets_root_dir + "/Isaac/Robots/Kawasaki/RS007N/rs007n_onrobot_rg2.usd"
+            robot_usd_file_path = assets_root_dir + "/Isaac/Robots/UniversalRobots/ur10e/ur10e.usd"
+            mopo_robot_name = "RS007N"
+            rmp_param_dir = rmp_config_dir + "/Kawasaki"
+            rdf_path = rmp_param_dir + "/rs007n/rmpflow/rs007n_robot_description.yaml"
+            urdf_path = rmp_param_dir + "/rs007n/rs007n_onrobot_rg2.urdf"
+            rmp_config_path = rmp_param_dir + "/rs007n/rmpflow/rs007n_rmpflow_config.yaml"
+            eeframe_name = "gripper_center"
+            max_step_size = 0.00334
+
+            grippername = "rg2"
+            pp_controller = "jaka-rg2"
+
+            mfg = "Kawasaki"
+            model = "RS007N"
+            desc = "Kawasaki RS007N"
 
         case "ur10e-gripper":
             robot_prim_path = "/ur10e"
@@ -401,7 +463,7 @@ def create_and_populate_robot_config(robot_name, robot_root_usdpath="/world/robo
             model = "Minicobo"
             desc = "Jaka Minicobo with a short suction gripper - mounted high"
 
-        case "rs007n":
+        case "rs007n_old":
             robot_prim_path = "/World/roborg/khi_rs007n"
             artpath = robot_prim_path
             robot_usd_file_path = assets_root_dir + "/Isaac/Robots/Kawasaki/RS007N/rs007n_onrobot_rg2.usd"
@@ -513,6 +575,7 @@ def create_and_populate_robot_config(robot_name, robot_root_usdpath="/world/robo
     rc.rdf_path = rdf_path
     rc.rmp_config_path = rmp_config_path
     rc.robot_usd_file_path = robot_usd_file_path
+    print(f"Robot {robot_name} robot_usd_file_path:{robot_usd_file_path}")
 
     rc.manufacturer = mfg
     rc.model = model
@@ -524,6 +587,7 @@ def create_and_populate_robot_config(robot_name, robot_root_usdpath="/world/robo
     rc.root_usdpath = robot_root_usdpath
     rc.robot_action_planning_method = "RobPlan.UiInitiated" # "RobPlan.UiInitiated" or "RobPlan.ReadFromFile"
     rc.current_robot_action = "NoAction"
+    rc.show_joints_close_to_limits = False
 
     if not skiplula:
         try:

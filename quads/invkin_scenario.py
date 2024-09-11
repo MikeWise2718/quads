@@ -47,6 +47,7 @@ class InvkinScenario(ScenarioBase):
         super().load_scenario(robot_name, ground_opt)
 
         # self._ro bcfg = self.create_robot_config(robot_name, ground_opt)
+        print("InvKin load_scenario robot_name:", robot_name)
 
         self.add_light("sphere_light")
         self.add_ground(ground_opt)
@@ -68,6 +69,7 @@ class InvkinScenario(ScenarioBase):
         add_reference_to_stage(get_assets_root_path() + "/Isaac/Props/UIElements/frame_prim.usd", "/World/target")
         sz = 0.04
         self._target = XFormPrim("/World/target", scale=[sz, sz, sz])
+        print("InvKin load_scenario done")
 
     def post_load_scenario(self):
         print("InvKin post_load_scenario")
@@ -90,8 +92,10 @@ class InvkinScenario(ScenarioBase):
         self._ee_rot = ee_rot_mat
 
         print("Valid frame names at which to compute kinematics:", rcfg._kinematics_solver.get_all_frame_names())
+        print("InvKin post_load_scenario done")
 
     def reset_scenario(self):
+        print("InvKin reset_scenario")
         self.teleport_robots_to_zeropos()
 
         rcfg = self.get_robot_config()
@@ -101,6 +105,7 @@ class InvkinScenario(ScenarioBase):
         self._ee_rot = ee_rot_mat
 
         self._target.set_world_pose(self._ee_pos, rot_matrices_to_quats(self._ee_rot))
+        print("InvKin reset_scenario done")
 
     phystep = 0
     ikerrs = 0
@@ -109,6 +114,7 @@ class InvkinScenario(ScenarioBase):
     last_msg_time = 0
 
     def physics_step(self, step_size):
+        print("InvKin physics_step phystep:", self.phystep)
         rcfg = self.get_robot_config()
 
         if self.ik_solving_active:
@@ -142,6 +148,7 @@ class InvkinScenario(ScenarioBase):
         ee_position, ee_rot_mat = rcfg._articulation_kinematics_solver.compute_end_effector_pose()
         self._ee_pos = ee_position
         self._ee_rot = ee_rot_mat
+        print("InvKin physics_step done")
 
     def teardown_scenario(self):
         pass
